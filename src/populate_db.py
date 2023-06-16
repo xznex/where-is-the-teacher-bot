@@ -24,15 +24,6 @@ def populate_db():
                         for subject in parsed[institute][day_of_week][time][parity]:
                             audience = parsed[institute][day_of_week][time][parity][subject]
 
-                            # print(
-                            #     audience,
-                            #     subject,
-                            #     day_of_week,
-                            #     parity,
-                            #     start_of_class,
-                            #     end_of_class
-                            # )
-
                             new_audience = Audience(
                                 audience=audience,
                                 event=subject,

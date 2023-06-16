@@ -92,29 +92,26 @@ async def search_teacher(message: types.Message):
     )
 
     query = ((Audience.day_of_week == list(weekday_dict)[0]) & (Audience.parity == weekday_dict[list(weekday_dict)[0]]))
+
     for i in range(1, 7):
         query |= ((Audience.day_of_week == list(weekday_dict)[i]) & (
                     Audience.parity == weekday_dict[list(weekday_dict)[i]]))
 
     results = session.query(Audience).where(
-        Audience.event.like(f"%{message.text}%"),
+        Audience.event.like(f"%{message.text.lower()}%"),
         query
     ).order_by(
-        # Audience.day_of_week.in_()
         ordering
     ).limit(20).all()
 
-    print(len(results))
     if len(results) == 0:
-        await message.answer("Либо нет либо хз")
+        await message.answer("Преподаватель не был найден. Повторите попытку")
     else:
         out = []
         for result in results:
-            print(result.event)
-            out.append(f"{message.text} проводит занятие в {result.audience} {result.day_of_week}"
+            out.append(f"{message.text.title()} проводит занятие в {result.audience} {result.day_of_week}"
                        f" ({result.parity}) c {result.start_of_class} по {result.end_of_class}")
 
-        print(out)
         #
         # length_out = len(out)
         # if length_out > 5:

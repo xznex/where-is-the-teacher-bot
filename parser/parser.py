@@ -152,17 +152,21 @@ def parser(wb, i, week_parity_flag=False):
 
                             audience = get_audience(subject)
 
-                            JSON_OUT[sheet.title][day_of_week][period][week_parity][subject] = audience
+                            JSON_OUT[sheet.title][day_of_week][period][week_parity][subject.lower()] = audience
 
 
+# итерация по path до каждого файла
 for excel_path in get_files(PATH):
+    # открывается файл Excel только в том случае, если файл не запущен, иначе выдается исключение
     try:
         wb = load_workbook(filename=excel_path)
     except PermissionError as e:
         print("Необходимо закрыть все файлы Excel для корректной работы.")
 
+    # кол-во листов заносится в переменную
     quantity_sheets = len(wb.sheetnames)
 
+    # данное условие необходимо для корректной обработки файла с расписанием аспирантуры
     if quantity_sheets == GRADUATE_SCHOOL:
         ws = wb.active
 
@@ -171,8 +175,10 @@ for excel_path in get_files(PATH):
         else:
             parser(wb, 0, True)
     else:
+        # парсим каждый лист
         for i in range(quantity_sheets):
             parser(wb, i)
 
+# преобразуем и записываем словарь в JSON-объект и помещаем его в файл data_file.json
 with open("data_file.json", "w") as write_file:
     json.dump(JSON_OUT, write_file, ensure_ascii=False)
